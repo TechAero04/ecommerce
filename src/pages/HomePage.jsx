@@ -69,7 +69,7 @@ export const HomePage = () => {
                 fontWeight: 600
               }}>
                 <Sparkles size={16} color="#F59E0B" />
-                <span>Festive Grand Launch 2026</span>
+                <span>Velmora Festive Grand Launch 2026</span>
               </div>
 
               <h1 style={{
@@ -80,7 +80,7 @@ export const HomePage = () => {
                 marginBottom: '1.25rem',
                 letterSpacing: '-1px'
               }}>
-                Authentic Indian Crafts & <span style={{
+                Authentic Crafts & <span style={{
                   background: 'linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent'
@@ -110,7 +110,7 @@ export const HomePage = () => {
               <div style={{ display: 'flex', gap: '2.5rem', marginTop: '3.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '2rem' }}>
                 <div>
                   <h3 style={{ color: '#F59E0B', fontSize: '1.8rem', fontWeight: 800 }}>500+</h3>
-                  <p style={{ color: 'var(--text-light)', fontSize: '0.8rem' }}>Master Artisans</p>
+                  <p style={{ color: 'var(--text-light)', fontSize: '0.8rem' }}>Master Creators</p>
                 </div>
                 <div>
                   <h3 style={{ color: '#10B981', fontSize: '1.8rem', fontWeight: 800 }}>100k+</h3>
@@ -160,8 +160,8 @@ export const HomePage = () => {
         <div className="container">
           <div className="flex-between" style={{ marginBottom: '2rem' }}>
             <div>
-              <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Explore Curated Categories</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Tailored handcrafted collections for every lifestyle</p>
+              <h2 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Explore Curated Collections</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Tailored handcrafted items for every lifestyle</p>
             </div>
             <button onClick={() => navigateTo('shop')} className="btn btn-secondary btn-sm">
               View All <ArrowRight size={16} />
@@ -355,17 +355,17 @@ export const HomePage = () => {
               }} className="mobile-hide">
                 <Award size={32} style={{ marginBottom: '0.5rem' }} />
                 <h4 style={{ color: 'white', fontSize: '1rem' }}>100% Verified Origin</h4>
-                <p style={{ fontSize: '0.75rem', opacity: 0.9 }}>Supporting 500+ weaving & craft families across India</p>
+                <p style={{ fontSize: '0.75rem', opacity: 0.9 }}>Supporting 500+ weaving & craft families</p>
               </div>
             </div>
 
             <div>
-              <span className="badge badge-trending" style={{ marginBottom: '1rem' }}>Artisan Empowerment</span>
+              <span className="badge badge-trending" style={{ marginBottom: '1rem' }}>Empowerment & Design</span>
               <h2 style={{ fontSize: '2.4rem', fontWeight: 800, color: 'white', marginBottom: '1.25rem', lineHeight: 1.2 }}>
-                Empowering India's Heritage Weavers & Innovators
+                Empowering Master Weavers & Modern Innovators
               </h2>
               <p style={{ color: 'var(--text-light)', fontSize: '1rem', lineHeight: 1.7, marginBottom: '2rem' }}>
-                At BHARAT, every product carries a soul. We eliminate middlemen to connect traditional weavers from Varanasi, wood artisans from Rajasthan, and tech pioneers directly to modern homes worldwide.
+                At Velmora, every product carries a soul. We eliminate middlemen to connect traditional weavers from Varanasi, wood artisans from Rajasthan, and tech pioneers directly to modern homes worldwide.
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
@@ -393,7 +393,7 @@ export const HomePage = () => {
           <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 3rem' }}>
             <span className="badge badge-new" style={{ marginBottom: '0.5rem' }}>Customer Love</span>
             <h2 style={{ fontSize: '2rem', fontWeight: 800 }}>Loved by 100,000+ Shoppers</h2>
-            <p style={{ color: 'var(--text-muted)' }}>Real feedback from verified buyers across India</p>
+            <p style={{ color: 'var(--text-muted)' }}>Real feedback from verified buyers</p>
           </div>
 
           <div className="grid-cols-3">

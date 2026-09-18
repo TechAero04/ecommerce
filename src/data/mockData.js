@@ -1,4 +1,4 @@
-// Mock Database for BHARAT D2C Marketplace
+// Mock Database for Velmora D2C Marketplace
 
 export const CATEGORIES = [
   { id: 'all', name: 'All Products', icon: 'ShoppingBag' },
@@ -22,7 +22,7 @@ export const PRODUCTS = [
     isNew: true,
     isTrending: true,
     stock: 14,
-    sku: 'BHR-FASH-001',
+    sku: 'VEL-FASH-001',
     image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80',
@@ -56,7 +56,7 @@ export const PRODUCTS = [
     isNew: false,
     isTrending: true,
     stock: 22,
-    sku: 'BHR-ELEC-002',
+    sku: 'VEL-ELEC-002',
     image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
@@ -89,7 +89,7 @@ export const PRODUCTS = [
     isNew: true,
     isTrending: false,
     stock: 8,
-    sku: 'BHR-HOME-003',
+    sku: 'VEL-HOME-003',
     image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=800&q=80',
@@ -120,7 +120,7 @@ export const PRODUCTS = [
     isNew: false,
     isTrending: true,
     stock: 45,
-    sku: 'BHR-WELL-004',
+    sku: 'VEL-WELL-004',
     image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80',
@@ -148,7 +148,7 @@ export const PRODUCTS = [
     isNew: true,
     isTrending: true,
     stock: 19,
-    sku: 'BHR-GOUR-005',
+    sku: 'VEL-GOUR-005',
     image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=800&q=80',
@@ -176,7 +176,7 @@ export const PRODUCTS = [
     isNew: false,
     isTrending: false,
     stock: 30,
-    sku: 'BHR-HOME-006',
+    sku: 'VEL-HOME-006',
     image: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80'
@@ -206,7 +206,7 @@ export const PRODUCTS = [
     isNew: false,
     isTrending: true,
     stock: 60,
-    sku: 'BHR-ELEC-007',
+    sku: 'VEL-ELEC-007',
     image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80'
@@ -237,7 +237,7 @@ export const PRODUCTS = [
     isNew: true,
     isTrending: false,
     stock: 12,
-    sku: 'BHR-HOME-008',
+    sku: 'VEL-HOME-008',
     image: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=800&q=80'
@@ -271,7 +271,7 @@ export const MOCK_REVIEWS = [
     rating: 5,
     date: '1 week ago',
     verified: true,
-    comment: 'BHARAT platform experience was so smooth. The active noise canceling on these headphones is as good as premium Sony/Bose ones.'
+    comment: 'Velmora platform experience was so smooth. The active noise canceling on these headphones is as good as premium Sony/Bose ones.'
   },
   {
     id: 'rev-3',
@@ -301,10 +301,10 @@ export const MOCK_ORDERS = [
     ],
     total: 3499,
     status: 'In Transit',
-    statusStep: 3, // 1: Placed, 2: Packed, 3: In Transit, 4: Delivered
+    statusStep: 3,
     paymentMethod: 'UPI (Google Pay)',
     shippingAddress: '402 Sunrise Towers, Indiranagar, Bengaluru, KA 560038',
-    trackingNumber: 'DEL-99482710'
+    trackingNumber: 'VEL-99482710'
   },
   {
     id: 'ORD-87104',
@@ -330,7 +330,7 @@ export const MOCK_ORDERS = [
 
 export const MOCK_USER = {
   name: 'Rajesh Malhotra',
-  email: 'rajesh.m@bharat.in',
+  email: 'rajesh.m@velmora.com',
   phone: '+91 98765 43210',
   avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
   memberSince: 'January 2025',
@@ -367,7 +367,7 @@ export const MOCK_FAQS = [
     answer: 'Standard delivery takes 2-4 business days for metro cities and 4-6 business days for rest of India. Express 24-hour shipping is available in selected metro pincodes.'
   },
   {
-    question: 'What is BHARAT’s Return and Exchange policy?',
+    question: 'What is Velmora’s Return and Exchange policy?',
     answer: 'We offer a hassle-free 7-day return and exchange policy. Items must be unused, unwashed, and in original packaging with intact tags.'
   },
   {
@@ -376,15 +376,15 @@ export const MOCK_FAQS = [
   },
   {
     question: 'Which payment methods do you accept?',
-    answer: 'We accept all major Indian payment options: UPI (GPay, PhonePe, Paytm, BHIM), Credit/Debit Cards (Visa, MasterCard, RuPay), NetBanking (50+ banks), and Cash on Delivery (COD).'
+    answer: 'We accept all major payment options: UPI (GPay, PhonePe, Paytm, BHIM), Credit/Debit Cards (Visa, MasterCard, RuPay), NetBanking (50+ banks), and Cash on Delivery (COD).'
   },
   {
-    question: 'How do I earn and redeem BHARAT Reward Points?',
+    question: 'How do I earn and redeem Velmora Reward Points?',
     answer: 'You earn 10 reward points for every ₹100 spent. Points can be redeemed at checkout for instant cash discounts (100 Points = ₹10).'
   }
 ];
 
 export const MOCK_COUPONS = [
-  { code: 'BHARAT10', discountPercent: 10, minSpend: 1000, description: '10% OFF on orders over ₹1,000' },
+  { code: 'VELMORA10', discountPercent: 10, minSpend: 1000, description: '10% OFF on orders over ₹1,000' },
   { code: 'FESTIVE20', discountPercent: 20, minSpend: 2500, description: '20% OFF on Artisanal & Fashion items' }
 ];

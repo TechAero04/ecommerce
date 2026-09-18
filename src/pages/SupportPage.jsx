@@ -88,7 +88,7 @@ export const SupportPage = () => {
             </div>
             <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.3rem' }}>Toll-Free Helpline</h4>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>Available 24/7 in English & Hindi</p>
-            <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-primary)' }}>1800-BHARAT-CARE</span>
+            <span style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-primary)' }}>1800-VELMORA-CARE</span>
           </div>
 
           <div style={{ background: 'white', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', textAlign: 'center' }}>
@@ -97,7 +97,7 @@ export const SupportPage = () => {
             </div>
             <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.3rem' }}>Email Support</h4>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>Average response time: 2 hours</p>
-            <span style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--color-emerald)' }}>support@bharat.in</span>
+            <span style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--color-emerald)' }}>support@velmora.com</span>
           </div>
 
           <div style={{ background: 'white', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', textAlign: 'center' }}>

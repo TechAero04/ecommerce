@@ -4,7 +4,7 @@ import { MessageSquare, X, Send, Bot, User, Sparkles } from 'lucide-react';
 export const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: 'Namaste! 🙏 Welcome to BHARAT Support. How can I assist you with your order today?' }
+    { sender: 'bot', text: 'Namaste! 🙏 Welcome to Velmora Support. How can I assist you with your order today?' }
   ]);
   const [input, setInput] = useState('');
 
@@ -88,7 +88,7 @@ export const ChatWidget = () => {
               <Bot size={20} color="#F59E0B" />
             </div>
             <div>
-              <h4 style={{ color: 'white', fontSize: '0.95rem', margin: 0 }}>BHARAT AI Support</h4>
+              <h4 style={{ color: 'white', fontSize: '0.95rem', margin: 0 }}>Velmora AI Support</h4>
               <span style={{ fontSize: '0.725rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981' }} /> Online now
               </span>

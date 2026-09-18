@@ -101,7 +101,7 @@ export const DashboardPage = () => {
 
           <div style={{ background: 'white', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>BHARAT Coins</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>Velmora Coins</span>
               <div style={{ background: '#FEF3C7', padding: '0.5rem', borderRadius: '8px', color: '#D97706' }}>
                 <Award size={20} />
               </div>

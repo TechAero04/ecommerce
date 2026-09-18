@@ -59,11 +59,11 @@ export const Header = () => {
         <div className="container flex-between" style={{ width: '100%' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Sparkles size={14} color="#F59E0B" />
-            <span>Festive Offer: Extra 10% OFF with code <strong>BHARAT10</strong> | Free Shipping over ₹1,999</span>
+            <span>Festive Offer: Extra 10% OFF with code <strong>VELMORA10</strong> | Free Shipping over ₹1,999</span>
           </div>
           <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }} className="mobile-hide">
             <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }} onClick={() => navigateTo('support')}>
-              <PhoneCall size={13} /> 24/7 Helpline: 1800-BHARAT
+              <PhoneCall size={13} /> 24/7 Helpline: 1800-VELMORA
             </span>
             <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }} onClick={() => navigateTo('support')}>
               <HelpCircle size={13} /> Track Order
@@ -101,7 +101,7 @@ export const Header = () => {
             </div>
             <div>
               <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-0.5px', lineHeight: 1 }}>
-                BHARAT<span style={{ color: 'var(--color-accent)' }}>.</span>
+                VELMORA<span style={{ color: 'var(--color-accent)' }}>.</span>
               </h1>
               <span style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
                 Artisanal D2C Store

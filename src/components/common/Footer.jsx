@@ -7,7 +7,7 @@ export const Footer = () => {
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
-    showToast('Subscribed to BHARAT VIP Newsletter!', 'success');
+    showToast('Subscribed to Velmora VIP Newsletter!', 'success');
   };
 
   return (
@@ -32,7 +32,7 @@ export const Footer = () => {
             </div>
             <div>
               <h4 style={{ color: 'white', fontSize: '1rem' }}>100% Authentic</h4>
-              <p style={{ color: 'var(--text-light)', fontSize: '0.825rem' }}>Directly from verified artisans</p>
+              <p style={{ color: 'var(--text-light)', fontSize: '0.825rem' }}>Directly from verified creators</p>
             </div>
           </div>
 
@@ -77,10 +77,10 @@ export const Footer = () => {
               }}>
                 <ShoppingBag size={22} />
               </div>
-              <h2 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 800 }}>BHARAT<span style={{ color: 'var(--color-accent)' }}>.</span></h2>
+              <h2 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 800 }}>VELMORA<span style={{ color: 'var(--color-accent)' }}>.</span></h2>
             </div>
             <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-              India’s premier D2C marketplace celebrating authentic heritage craftsmanship, modern technology, and sustainable lifestyle products.
+              Premier D2C marketplace celebrating authentic heritage craftsmanship, modern technology, and sustainable lifestyle products.
             </p>
             <div style={{ display: 'flex', gap: '0.8rem' }}>
               {['Instagram', 'Twitter', 'Facebook', 'LinkedIn'].map((platform, idx) => (
@@ -125,7 +125,7 @@ export const Footer = () => {
 
           {/* Newsletter Box */}
           <div>
-            <h4 style={{ color: 'white', fontSize: '1.1rem', marginBottom: '1rem' }}>Join BHARAT Club</h4>
+            <h4 style={{ color: 'white', fontSize: '1.1rem', marginBottom: '1rem' }}>Join Velmora Club</h4>
             <p style={{ color: 'var(--text-light)', fontSize: '0.85rem', marginBottom: '1rem' }}>
               Subscribe to get exclusive drops, artisan stories & ₹500 off your first purchase.
             </p>
@@ -158,7 +158,7 @@ export const Footer = () => {
       {/* Copyright Bar */}
       <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', padding: '1.5rem 0', background: '#090D16' }}>
         <div className="container flex-between" style={{ fontSize: '0.825rem', color: 'var(--text-light)' }}>
-          <p>© 2026 BHARAT D2C Commerce Ltd. Built with <Heart size={14} color="#EF4444" style={{ display: 'inline', verticalAlign: 'middle' }} /> for India.</p>
+          <p>© 2026 Velmora Commerce Ltd. Built with <Heart size={14} color="#EF4444" style={{ display: 'inline', verticalAlign: 'middle' }} />.</p>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <span>UPI / Cards / NetBanking / COD Supported</span>
             <span>•</span>

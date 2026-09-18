@@ -8,7 +8,7 @@ export const AuthPage = () => {
 
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'signup'
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('rajesh.m@bharat.in');
+  const [email, setEmail] = useState('rajesh.m@velmora.com');
   const [password, setPassword] = useState('password123');
   const [name, setName] = useState('Rajesh Malhotra');
 
@@ -52,10 +52,10 @@ export const AuthPage = () => {
               <User size={28} />
             </div>
             <h2 style={{ fontSize: '1.6rem', fontWeight: 800 }}>
-              {authMode === 'login' ? 'Welcome Back to BHARAT' : 'Create BHARAT Account'}
+              {authMode === 'login' ? 'Welcome Back to Velmora' : 'Create Velmora Account'}
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-              {authMode === 'login' ? 'Access your orders, wishlist & rewards' : 'Join India’s D2C Artisanal Marketplace'}
+              {authMode === 'login' ? 'Access your orders, wishlist & rewards' : 'Join Velmora D2C Artisanal Marketplace'}
             </p>
           </div>
 

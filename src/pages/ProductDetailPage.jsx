@@ -300,7 +300,7 @@ export const ProductDetailPage = () => {
                     </li>
                   ))
                 ) : (
-                  <li style={{ fontSize: '0.95rem' }}>Crafted with 100% premium grade materials certified by BHARAT standards.</li>
+                  <li style={{ fontSize: '0.95rem' }}>Crafted with 100% premium grade materials certified by Velmora standards.</li>
                 )}
               </ul>
             </div>

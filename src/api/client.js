@@ -124,6 +124,17 @@ export const apiClient = {
   // ==================================================================
   // Admin Dashboard API Client Methods (Milestone 3 Deliverables)
   // ==================================================================
+  async adminLogin(username, password) {
+    const res = await fetch(`${API_BASE_URL}/admin/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Admin authentication failed');
+    return data;
+  },
+
   async getAdminStats() {
     const res = await fetch(`${API_BASE_URL}/admin/stats`);
     if (!res.ok) throw new Error('Failed to fetch admin statistics');

@@ -28,12 +28,20 @@ import {
   X, 
   Save, 
   Eye, 
+  EyeOff,
   RefreshCw,
   SlidersHorizontal,
   ShieldCheck,
   Check,
-  ArrowLeft
+  ArrowLeft,
+  Lock,
+  Unlock,
+  LogOut,
+  KeyRound,
+  ShieldAlert,
+  UserCheck
 } from 'lucide-react';
+import { apiClient } from '../api/client';
 
 export const AdminPage = () => {
   const { 
@@ -62,6 +70,64 @@ export const AdminPage = () => {
   } = useShop();
 
   const [activeTab, setActiveTab] = useState('overview');
+
+  // Admin Authentication & Security Gate State
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return Boolean(localStorage.getItem('velmora_admin_token'));
+  });
+  const [adminId, setAdminId] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+  const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    setLoginError('');
+    setIsAuthenticating(true);
+
+    const cleanId = (adminId || '').trim().toLowerCase();
+    const cleanPass = (adminPassword || '').trim();
+
+    try {
+      if (isBackendConnected) {
+        const res = await apiClient.adminLogin(cleanId, cleanPass);
+        localStorage.setItem('velmora_admin_token', res.token || 'admin-authenticated');
+        setIsAuthenticated(true);
+        showToast('🔓 Admin Access Granted! Welcome to Velmora Control Suite.', 'success');
+      } else {
+        const validIds = ['admin', 'admin@velmora.com', 'bharat', 'joy'];
+        const validPass = ['admin123', 'velmora@2026', 'admin'];
+        if (validIds.includes(cleanId) && validPass.includes(cleanPass)) {
+          localStorage.setItem('velmora_admin_token', 'admin-authenticated');
+          setIsAuthenticated(true);
+          showToast('🔓 Admin Access Granted! Welcome to Velmora Control Suite.', 'success');
+        } else {
+          setLoginError('Invalid Admin ID or Password. Access denied.');
+          showToast('Access Denied: Invalid Credentials', 'danger');
+        }
+      }
+    } catch (err) {
+      setLoginError(err.message || 'Authentication failed. Please verify credentials.');
+      showToast(err.message || 'Access Denied', 'danger');
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem('velmora_admin_token');
+    setIsAuthenticated(false);
+    setAdminPassword('');
+    setLoginError('');
+    showToast('🔒 Admin session locked successfully', 'info');
+  };
+
+  const fillDemoCredentials = () => {
+    setAdminId('admin@velmora.com');
+    setAdminPassword('admin123');
+    setLoginError('');
+  };
 
   // Search & Filter States
   const [productSearch, setProductSearch] = useState('');
@@ -244,6 +310,257 @@ export const AdminPage = () => {
     setCategoryForm({ id: '', name: '', icon: 'ShoppingBag' });
   };
 
+  // If not authenticated as Admin, show the Secure Admin Login Gate
+  if (!isAuthenticated) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'radial-gradient(ellipse at top, #1E1B4B 0%, #0F172A 70%, #020617 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2rem 1.5rem',
+        position: 'relative'
+      }}>
+        {/* Glow backdrop effects */}
+        <div style={{
+          position: 'absolute',
+          top: '20%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '500px',
+          height: '350px',
+          background: 'radial-gradient(circle, rgba(79, 70, 229, 0.25) 0%, rgba(245, 158, 11, 0.1) 60%, transparent 80%)',
+          filter: 'blur(60px)',
+          pointerEvents: 'none'
+        }} />
+
+        <div style={{
+          width: '100%',
+          maxWidth: '460px',
+          background: 'rgba(30, 41, 59, 0.85)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          borderRadius: '24px',
+          padding: '2.5rem',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          
+          {/* Header Shield & Brand */}
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <div style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '18px',
+              background: 'linear-gradient(135deg, #4F46E5 0%, #F59E0B 100%)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              boxShadow: '0 8px 24px rgba(79, 70, 229, 0.45)',
+              marginBottom: '1rem'
+            }}>
+              <Lock size={32} />
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', marginBottom: '0.35rem' }}>
+              <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.5px' }}>
+                VELMORA<span style={{ color: '#F59E0B' }}>.</span>
+              </h2>
+              <span style={{
+                background: 'rgba(245, 158, 11, 0.2)',
+                color: '#F59E0B',
+                fontSize: '0.65rem',
+                padding: '0.15rem 0.5rem',
+                borderRadius: '4px',
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}>
+                Security Gate
+              </span>
+            </div>
+
+            <p style={{ color: '#94A3B8', fontSize: '0.85rem' }}>
+              Restricted Area. Enter Administrator credentials to unlock dashboard.
+            </p>
+          </div>
+
+          {/* Error Message */}
+          {loginError && (
+            <div style={{
+              background: 'rgba(239, 68, 68, 0.15)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#FCA5A5',
+              padding: '0.75rem 1rem',
+              borderRadius: '12px',
+              fontSize: '0.825rem',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              marginBottom: '1.25rem'
+            }}>
+              <ShieldAlert size={18} color="#EF4444" />
+              <span>{loginError}</span>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleAdminLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+            
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#E2E8F0', marginBottom: '0.4rem' }}>
+                Admin Email / User ID
+              </label>
+              <div style={{ position: 'relative' }}>
+                <KeyRound size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
+                <input 
+                  type="text" 
+                  required
+                  placeholder="admin@velmora.com"
+                  value={adminId}
+                  onChange={(e) => setAdminId(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem 0.75rem 2.6rem',
+                    background: '#0F172A',
+                    border: '1px solid #334155',
+                    borderRadius: '12px',
+                    color: '#FFFFFF',
+                    fontSize: '0.9rem',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#E2E8F0', marginBottom: '0.4rem' }}>
+                Admin Password
+              </label>
+              <div style={{ position: 'relative' }}>
+                <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
+                <input 
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  placeholder="••••••••••••"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 2.8rem 0.75rem 2.6rem',
+                    background: '#0F172A',
+                    border: '1px solid #334155',
+                    borderRadius: '12px',
+                    color: '#FFFFFF',
+                    fontSize: '0.9rem',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#94A3B8',
+                    padding: '4px'
+                  }}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isAuthenticating}
+              className="btn btn-primary"
+              style={{
+                width: '100%',
+                padding: '0.85rem',
+                fontSize: '0.95rem',
+                fontWeight: 700,
+                borderRadius: '12px',
+                marginTop: '0.5rem',
+                gap: '0.5rem',
+                boxShadow: '0 4px 14px rgba(79, 70, 229, 0.4)'
+              }}
+            >
+              {isAuthenticating ? (
+                <span>Verifying Security Clearance...</span>
+              ) : (
+                <>
+                  <Unlock size={18} /> Unlock Admin Panel
+                </>
+              )}
+            </button>
+
+          </form>
+
+          {/* Quick Demo Helper */}
+          <div style={{
+            marginTop: '1.5rem',
+            paddingTop: '1.25rem',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            textAlign: 'center'
+          }}>
+            <span style={{ fontSize: '0.75rem', color: '#94A3B8', display: 'block', marginBottom: '0.65rem' }}>
+              Authorized Credentials: <code>admin@velmora.com</code> | <code>admin123</code>
+            </span>
+            <button
+              type="button"
+              onClick={fillDemoCredentials}
+              style={{
+                fontSize: '0.75rem',
+                color: '#F59E0B',
+                background: 'rgba(245, 158, 11, 0.12)',
+                border: '1px solid rgba(245, 158, 11, 0.3)',
+                padding: '0.35rem 0.85rem',
+                borderRadius: '8px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem'
+              }}
+            >
+              <UserCheck size={14} /> Auto-fill Admin Credentials
+            </button>
+          </div>
+
+          {/* Back to store */}
+          <div style={{ marginTop: '1.25rem', textAlign: 'center' }}>
+            <button
+              type="button"
+              onClick={() => navigateTo('home')}
+              style={{
+                fontSize: '0.8rem',
+                color: '#94A3B8',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem'
+              }}
+            >
+              <ArrowLeft size={14} /> Return to Storefront
+            </button>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: '#F1F5F9', display: 'flex', flexDirection: 'column' }}>
       
@@ -372,6 +689,24 @@ export const AdminPage = () => {
                 </span>
               </div>
             </div>
+
+            {/* Lock / Logout Button */}
+            <button 
+              onClick={handleAdminLogout}
+              className="btn btn-sm"
+              style={{ 
+                background: 'rgba(239, 68, 68, 0.15)', 
+                color: '#FCA5A5', 
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                gap: '0.4rem',
+                fontSize: '0.8rem',
+                padding: '0.35rem 0.75rem',
+                borderRadius: '10px'
+              }}
+              title="Lock Admin Portal & Logout"
+            >
+              <Lock size={14} /> Lock / Logout
+            </button>
 
           </div>
         </div>

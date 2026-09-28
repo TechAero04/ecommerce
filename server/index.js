@@ -146,6 +146,36 @@ const server = http.createServer(async (req, res) => {
     }
 
     // ------------------------------------------------------------------
+    // 4.5. Admin Auth API (Secure Admin Gate)
+    // ------------------------------------------------------------------
+    if (pathname === '/api/admin/auth/login' && method === 'POST') {
+      const body = await getRequestBody(req);
+      const { username, password } = body;
+
+      const validUsernames = ['admin', 'admin@velmora.com', 'bharat', 'joy'];
+      const validPasswords = ['admin123', 'velmora@2026', 'admin'];
+
+      const isMatch = validUsernames.includes((username || '').trim().toLowerCase()) && 
+                      validPasswords.includes((password || '').trim());
+
+      if (!isMatch) {
+        return sendJSON(res, { error: 'Invalid admin ID or password. Access restricted.' }, 401);
+      }
+
+      return sendJSON(res, {
+        success: true,
+        token: `admin-token-${Date.now()}`,
+        admin: {
+          id: 'adm-001',
+          name: 'Bharat Lal',
+          role: 'Super Administrator',
+          email: 'admin@velmora.com',
+          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80'
+        }
+      });
+    }
+
+    // ------------------------------------------------------------------
     // 5. Auth API (Login & Register)
     // ------------------------------------------------------------------
     if (pathname === '/api/auth/login' && method === 'POST') {

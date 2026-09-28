@@ -17,6 +17,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SupportPage } from './pages/SupportPage';
+import { AdminPage } from './pages/AdminPage';
 
 const PageRenderer = () => {
   const { currentPage } = useShop();
@@ -42,27 +43,46 @@ const PageRenderer = () => {
       return <ProfilePage />;
     case 'support':
       return <SupportPage />;
+    case 'admin':
+      return <AdminPage />;
     default:
       return <HomePage />;
   }
 };
 
+const MainLayout = () => {
+  const { currentPage } = useShop();
+
+  if (currentPage === 'admin') {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <AdminPage />
+        <Toast />
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <Header />
+      <main style={{ flex: 1 }}>
+        <PageRenderer />
+      </main>
+      <Footer />
+
+      {/* Global Drawers & Modals */}
+      <CartDrawer />
+      <QuickViewModal />
+      <ChatWidget />
+      <Toast />
+    </div>
+  );
+};
+
 export default function App() {
   return (
     <ShopProvider>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Header />
-        <main style={{ flex: 1 }}>
-          <PageRenderer />
-        </main>
-        <Footer />
-
-        {/* Global Drawers & Modals */}
-        <CartDrawer />
-        <QuickViewModal />
-        <ChatWidget />
-        <Toast />
-      </div>
+      <MainLayout />
     </ShopProvider>
   );
 }

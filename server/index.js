@@ -338,6 +338,342 @@ const server = http.createServer(async (req, res) => {
       return sendJSON(res, { success: true, ticketId }, 201);
     }
 
+    // ------------------------------------------------------------------
+    // 10. Admin Stats & Analytics API
+    // ------------------------------------------------------------------
+    if (pathname === '/api/admin/stats' && method === 'GET') {
+      const totalRevenueRow = db.prepare("SELECT COALESCE(SUM(total), 0) AS totalRevenue FROM orders WHERE status != 'Cancelled'").get();
+      const totalOrdersRow = db.prepare("SELECT COUNT(*) AS totalOrders FROM orders").get();
+      const totalProductsRow = db.prepare("SELECT COUNT(*) AS totalProducts FROM products").get();
+      const totalUsersRow = db.prepare("SELECT COUNT(*) AS totalUsers FROM users").get();
+      const lowStockRow = db.prepare("SELECT COUNT(*) AS lowStockCount FROM products WHERE stock <= 10").get();
+      const openTicketsRow = db.prepare("SELECT COUNT(*) AS openTicketsCount FROM support_tickets WHERE status != 'Resolved'").get();
+
+      const categoryBreakdown = db.prepare(`
+        SELECT category, COUNT(*) as productCount, AVG(price) as avgPrice
+        FROM products
+        GROUP BY category
+      `).all();
+
+      const ordersByStatus = db.prepare(`
+        SELECT status, COUNT(*) as count, COALESCE(SUM(total), 0) as totalValue
+        FROM orders
+        GROUP BY status
+      `).all();
+
+      const recentOrders = db.prepare("SELECT * FROM orders ORDER BY created_at DESC LIMIT 5").all().map(o => ({
+        ...o,
+        items: JSON.parse(o.items_json || '[]')
+      }));
+
+      return sendJSON(res, {
+        totalRevenue: totalRevenueRow.totalRevenue,
+        totalOrders: totalOrdersRow.totalOrders,
+        totalProducts: totalProductsRow.totalProducts,
+        totalUsers: totalUsersRow.totalUsers,
+        lowStockCount: lowStockRow.lowStockCount,
+        openTicketsCount: openTicketsRow.openTicketsCount,
+        categoryBreakdown,
+        ordersByStatus,
+        recentOrders
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // 11. Admin Products API (CRUD)
+    // ------------------------------------------------------------------
+    if (pathname === '/api/admin/products' && method === 'POST') {
+      const body = await getRequestBody(req);
+      const id = body.id || `prod-${Date.now()}`;
+      let sku = body.sku || `VEL-${(body.category || 'GEN').substring(0, 4).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+
+      // Check if SKU exists, append random suffix if needed
+      const existingSku = db.prepare('SELECT id FROM products WHERE sku = ?').get(sku);
+      if (existingSku && existingSku.id !== id) {
+        sku = `${sku}-${Math.floor(10 + Math.random() * 90)}`;
+      }
+
+      const stmt = db.prepare(`
+        INSERT OR REPLACE INTO products (
+          id, name, category, price, originalPrice, discount, rating, reviewCount,
+          isNew, isTrending, stock, sku, image, images_json, description,
+          details_json, sizes_json, colors_json
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      stmt.run(
+        id,
+        body.name,
+        body.category || 'fashion',
+        Number(body.price),
+        Number(body.originalPrice || body.price),
+        body.discount || null,
+        Number(body.rating || 5.0),
+        Number(body.reviewCount || 0),
+        body.isNew ? 1 : 0,
+        body.isTrending ? 1 : 0,
+        Number(body.stock || 10),
+        sku,
+        body.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
+        JSON.stringify(body.images || [body.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80']),
+        body.description || '',
+        JSON.stringify(body.details || []),
+        JSON.stringify(body.sizes || ['Standard']),
+        JSON.stringify(body.colors || [])
+      );
+
+      const created = db.prepare('SELECT * FROM products WHERE id = ?').get(id);
+      return sendJSON(res, {
+        ...created,
+        isNew: Boolean(created.isNew),
+        isTrending: Boolean(created.isTrending),
+        images: JSON.parse(created.images_json || '[]'),
+        details: JSON.parse(created.details_json || '[]'),
+        sizes: JSON.parse(created.sizes_json || '[]'),
+        colors: JSON.parse(created.colors_json || '[]')
+      }, 201);
+    }
+
+    if (pathname.startsWith('/api/admin/products/') && method === 'PUT') {
+      const id = pathname.replace('/api/admin/products/', '');
+      const body = await getRequestBody(req);
+
+      const existing = db.prepare('SELECT * FROM products WHERE id = ?').get(id);
+      if (!existing) {
+        return sendJSON(res, { error: 'Product not found' }, 404);
+      }
+
+      const stmt = db.prepare(`
+        UPDATE products SET
+          name = COALESCE(?, name),
+          category = COALESCE(?, category),
+          price = COALESCE(?, price),
+          originalPrice = COALESCE(?, originalPrice),
+          discount = COALESCE(?, discount),
+          isNew = COALESCE(?, isNew),
+          isTrending = COALESCE(?, isTrending),
+          stock = COALESCE(?, stock),
+          sku = COALESCE(?, sku),
+          image = COALESCE(?, image),
+          description = COALESCE(?, description)
+        WHERE id = ?
+      `);
+
+      stmt.run(
+        body.name !== undefined ? body.name : null,
+        body.category !== undefined ? body.category : null,
+        body.price !== undefined ? Number(body.price) : null,
+        body.originalPrice !== undefined ? Number(body.originalPrice) : null,
+        body.discount !== undefined ? body.discount : null,
+        body.isNew !== undefined ? (body.isNew ? 1 : 0) : null,
+        body.isTrending !== undefined ? (body.isTrending ? 1 : 0) : null,
+        body.stock !== undefined ? Number(body.stock) : null,
+        body.sku !== undefined ? body.sku : null,
+        body.image !== undefined ? body.image : null,
+        body.description !== undefined ? body.description : null,
+        id
+      );
+
+      const updated = db.prepare('SELECT * FROM products WHERE id = ?').get(id);
+      return sendJSON(res, {
+        ...updated,
+        isNew: Boolean(updated.isNew),
+        isTrending: Boolean(updated.isTrending),
+        images: JSON.parse(updated.images_json || '[]'),
+        details: JSON.parse(updated.details_json || '[]'),
+        sizes: JSON.parse(updated.sizes_json || '[]'),
+        colors: JSON.parse(updated.colors_json || '[]')
+      });
+    }
+
+    if (pathname.startsWith('/api/admin/products/') && method === 'DELETE') {
+      const id = pathname.replace('/api/admin/products/', '');
+      const stmt = db.prepare('DELETE FROM products WHERE id = ?');
+      const info = stmt.run(id);
+
+      if (info.changes === 0) {
+        return sendJSON(res, { error: 'Product not found' }, 404);
+      }
+      return sendJSON(res, { success: true, message: `Product ${id} deleted successfully` });
+    }
+
+    if (pathname.startsWith('/api/admin/products/') && pathname.endsWith('/stock') && method === 'PATCH') {
+      const id = pathname.replace('/api/admin/products/', '').replace('/stock', '');
+      const body = await getRequestBody(req);
+      const newStock = Number(body.stock);
+
+      const stmt = db.prepare('UPDATE products SET stock = ? WHERE id = ?');
+      stmt.run(newStock, id);
+
+      return sendJSON(res, { success: true, id, stock: newStock });
+    }
+
+    // ------------------------------------------------------------------
+    // 12. Admin Orders API
+    // ------------------------------------------------------------------
+    if (pathname === '/api/admin/orders' && method === 'GET') {
+      const stmt = db.prepare(`
+        SELECT orders.*, users.name as customerName, users.email as customerEmail
+        FROM orders
+        LEFT JOIN users ON orders.userId = users.id
+        ORDER BY orders.created_at DESC
+      `);
+      const rows = stmt.all();
+
+      const orders = rows.map(o => ({
+        ...o,
+        items: JSON.parse(o.items_json || '[]')
+      }));
+
+      return sendJSON(res, orders);
+    }
+
+    if (pathname.startsWith('/api/admin/orders/') && pathname.endsWith('/status') && method === 'PUT') {
+      const id = pathname.replace('/api/admin/orders/', '').replace('/status', '');
+      const body = await getRequestBody(req);
+      const { status, statusStep, trackingNumber } = body;
+
+      const stmt = db.prepare(`
+        UPDATE orders SET
+          status = COALESCE(?, status),
+          statusStep = COALESCE(?, statusStep),
+          trackingNumber = COALESCE(?, trackingNumber)
+        WHERE id = ?
+      `);
+
+      stmt.run(
+        status !== undefined ? status : null,
+        statusStep !== undefined ? Number(statusStep) : null,
+        trackingNumber !== undefined ? trackingNumber : null,
+        id
+      );
+
+      const updated = db.prepare('SELECT * FROM orders WHERE id = ?').get(id);
+      if (!updated) return sendJSON(res, { error: 'Order not found' }, 404);
+
+      return sendJSON(res, {
+        ...updated,
+        items: JSON.parse(updated.items_json || '[]')
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // 13. Admin Users / Customers API
+    // ------------------------------------------------------------------
+    if (pathname === '/api/admin/users' && method === 'GET') {
+      const stmt = db.prepare(`
+        SELECT 
+          users.*,
+          COUNT(DISTINCT orders.id) as totalOrders,
+          COALESCE(SUM(orders.total), 0) as totalSpent,
+          COUNT(DISTINCT addresses.id) as addressCount
+        FROM users
+        LEFT JOIN orders ON users.id = orders.userId
+        LEFT JOIN addresses ON users.id = addresses.userId
+        GROUP BY users.id
+      `);
+      const users = stmt.all();
+      return sendJSON(res, users);
+    }
+
+    if (pathname.startsWith('/api/admin/users/') && pathname.endsWith('/points') && method === 'PUT') {
+      const id = pathname.replace('/api/admin/users/', '').replace('/points', '');
+      const body = await getRequestBody(req);
+      const points = Number(body.points);
+
+      const stmt = db.prepare('UPDATE users SET rewardPoints = ? WHERE id = ?');
+      stmt.run(points, id);
+
+      return sendJSON(res, { success: true, id, rewardPoints: points });
+    }
+
+    // ------------------------------------------------------------------
+    // 14. Admin Categories API
+    // ------------------------------------------------------------------
+    if (pathname === '/api/admin/categories' && method === 'POST') {
+      const body = await getRequestBody(req);
+      const { id, name, icon } = body;
+
+      const stmt = db.prepare('INSERT OR REPLACE INTO categories (id, name, icon) VALUES (?, ?, ?)');
+      stmt.run(id, name, icon || 'ShoppingBag');
+
+      return sendJSON(res, { success: true, category: { id, name, icon: icon || 'ShoppingBag' } }, 201);
+    }
+
+    if (pathname.startsWith('/api/admin/categories/') && method === 'DELETE') {
+      const id = pathname.replace('/api/admin/categories/', '');
+      const stmt = db.prepare('DELETE FROM categories WHERE id = ?');
+      stmt.run(id);
+
+      return sendJSON(res, { success: true, message: `Category ${id} removed` });
+    }
+
+    // ------------------------------------------------------------------
+    // 15. Admin Coupons API
+    // ------------------------------------------------------------------
+    if (pathname === '/api/admin/coupons' && method === 'GET') {
+      const stmt = db.prepare('SELECT * FROM coupons');
+      return sendJSON(res, stmt.all());
+    }
+
+    if (pathname === '/api/admin/coupons' && method === 'POST') {
+      const body = await getRequestBody(req);
+      const { code, discountPercent, minSpend, description } = body;
+
+      const stmt = db.prepare('INSERT OR REPLACE INTO coupons (code, discountPercent, minSpend, description) VALUES (?, ?, ?, ?)');
+      stmt.run(code.toUpperCase(), Number(discountPercent), Number(minSpend || 0), description || '');
+
+      return sendJSON(res, { success: true, coupon: { code: code.toUpperCase(), discountPercent, minSpend, description } }, 201);
+    }
+
+    if (pathname.startsWith('/api/admin/coupons/') && method === 'DELETE') {
+      const code = pathname.replace('/api/admin/coupons/', '');
+      const stmt = db.prepare('DELETE FROM coupons WHERE UPPER(code) = UPPER(?)');
+      stmt.run(code);
+
+      return sendJSON(res, { success: true, message: `Coupon ${code} removed` });
+    }
+
+    // ------------------------------------------------------------------
+    // 16. Admin Support Tickets API
+    // ------------------------------------------------------------------
+    if (pathname === '/api/admin/tickets' && method === 'GET') {
+      const stmt = db.prepare('SELECT * FROM support_tickets ORDER BY created_at DESC');
+      return sendJSON(res, stmt.all());
+    }
+
+    if (pathname.startsWith('/api/admin/tickets/') && pathname.endsWith('/status') && method === 'PUT') {
+      const id = pathname.replace('/api/admin/tickets/', '').replace('/status', '');
+      const body = await getRequestBody(req);
+      const { status } = body;
+
+      const stmt = db.prepare('UPDATE support_tickets SET status = ? WHERE id = ?');
+      stmt.run(status, id);
+
+      return sendJSON(res, { success: true, id, status });
+    }
+
+    // ------------------------------------------------------------------
+    // 17. Admin Reviews Moderation API
+    // ------------------------------------------------------------------
+    if (pathname === '/api/admin/reviews' && method === 'GET') {
+      const stmt = db.prepare(`
+        SELECT reviews.*, products.name as productName, products.image as productImage
+        FROM reviews
+        LEFT JOIN products ON reviews.productId = products.id
+        ORDER BY reviews.id DESC
+      `);
+      return sendJSON(res, stmt.all());
+    }
+
+    if (pathname.startsWith('/api/admin/reviews/') && method === 'DELETE') {
+      const id = pathname.replace('/api/admin/reviews/', '');
+      const stmt = db.prepare('DELETE FROM reviews WHERE id = ?');
+      stmt.run(id);
+
+      return sendJSON(res, { success: true, message: `Review ${id} deleted` });
+    }
+
     // Route Not Found
     return sendJSON(res, { error: 'Route not found' }, 404);
 

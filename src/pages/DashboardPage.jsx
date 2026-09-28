@@ -94,7 +94,7 @@ export const DashboardPage = () => {
               </div>
             </div>
             <h3 style={{ fontSize: '1.8rem', fontWeight: 800 }}>{wishlist.length}</h3>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }} onClick={() => navigateTo('shop')} style={{ cursor: 'pointer', color: 'var(--color-primary)' }}>
+            <span style={{ fontSize: '0.75rem', cursor: 'pointer', color: 'var(--color-primary)' }} onClick={() => navigateTo('shop')}>
               View saved items →
             </span>
           </div>

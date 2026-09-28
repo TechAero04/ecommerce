@@ -191,6 +191,244 @@ export const ShopProvider = ({ children }) => {
     showToast('🎉 Order stored in SQLite Database!', 'success');
   };
 
+  // ==================================================================
+  // Admin Operations & Actions (Milestone 3 Deliverables)
+  // ==================================================================
+  const [categoriesList, setCategoriesList] = useState([
+    { id: 'all', name: 'All Products', icon: 'ShoppingBag' },
+    { id: 'fashion', name: 'Artisanal Fashion', icon: 'Shirt' },
+    { id: 'electronics', name: 'Smart Tech & Audio', icon: 'Headphones' },
+    { id: 'home', name: 'Home & Living', icon: 'Home' },
+    { id: 'beauty', name: 'Ayurveda & Wellness', icon: 'Sparkles' },
+    { id: 'gourmet', name: 'Gourmet Organic Spices', icon: 'Utensils' }
+  ]);
+
+  const [couponsList, setCouponsList] = useState([
+    { code: 'VELMORA10', discountPercent: 10, minSpend: 1000, description: '10% OFF on orders over ₹1,000' },
+    { code: 'FESTIVE20', discountPercent: 20, minSpend: 2500, description: '20% OFF on Artisanal & Fashion items' }
+  ]);
+
+  const [ticketsList, setTicketsList] = useState([
+    { id: 'TKT-84920', name: 'Aarav Sharma', email: 'aarav.sharma@example.com', subject: 'Express Delivery Request', message: 'Can you deliver before Friday evening?', status: 'Open', created_at: '2026-09-28 14:15:00' },
+    { id: 'TKT-39182', name: 'Priya Mukherjee', email: 'priya.m@example.com', subject: 'Custom Silk Sizing', message: 'Do you offer custom tailoring for Banarasi Silk?', status: 'In Progress', created_at: '2026-09-27 11:30:00' },
+    { id: 'TKT-19284', name: 'Rohan Mehra', email: 'rohan.m@example.com', subject: 'Payment confirmation query', message: 'Invoice received, need tax receipt for business.', status: 'Resolved', created_at: '2026-09-26 09:45:00' }
+  ]);
+
+  const [reviewsList, setReviewsList] = useState([
+    { id: 'rev-1', productId: 'prod-1', productName: 'Handcrafted Heritage Silk Kurta', author: 'Aarav Sharma', rating: 5, date: '2 days ago', verified: true, comment: 'The quality of the Banarasi silk is unbelievable for this price point!' },
+    { id: 'rev-2', productId: 'prod-2', productName: 'Acoustic Clarity Wireless Headphones', author: 'Priya Mukherjee', rating: 5, date: '1 week ago', verified: true, comment: 'Velmora platform experience was so smooth. Highly recommend!' },
+    { id: 'rev-3', productId: 'prod-3', productName: 'Hand-Carved Sheesham Wood Desk Lamp', author: 'Vikramaditya Roy', rating: 4, date: '2 weeks ago', verified: true, comment: 'High quality solid wood with warm aesthetic lighting.' }
+  ]);
+
+  // Admin Product Actions
+  const adminAddProduct = async (productData) => {
+    try {
+      if (isBackendConnected) {
+        const created = await apiClient.createProduct(productData);
+        setProductsList(prev => [created, ...prev]);
+      } else {
+        const localProduct = {
+          ...productData,
+          id: productData.id || `prod-${Date.now()}`,
+          rating: 5.0,
+          reviewCount: 0,
+          images: productData.images || [productData.image],
+          details: productData.details || ['Handcrafted quality'],
+          sizes: productData.sizes || ['Standard'],
+          colors: productData.colors || []
+        };
+        setProductsList(prev => [localProduct, ...prev]);
+      }
+      showToast('✨ Product added successfully to catalog!', 'success');
+      return true;
+    } catch (err) {
+      showToast(`Error adding product: ${err.message}`, 'danger');
+      return false;
+    }
+  };
+
+  const adminUpdateProduct = async (id, updatedFields) => {
+    try {
+      if (isBackendConnected) {
+        const updated = await apiClient.updateProduct(id, updatedFields);
+        setProductsList(prev => prev.map(p => p.id === id ? { ...p, ...updated } : p));
+      } else {
+        setProductsList(prev => prev.map(p => p.id === id ? { ...p, ...updatedFields } : p));
+      }
+      showToast('✅ Product updated successfully!', 'success');
+      return true;
+    } catch (err) {
+      showToast(`Error updating product: ${err.message}`, 'danger');
+      return false;
+    }
+  };
+
+  const adminDeleteProduct = async (id) => {
+    try {
+      if (isBackendConnected) {
+        await apiClient.deleteProduct(id);
+      }
+      setProductsList(prev => prev.filter(p => p.id !== id));
+      showToast('🗑️ Product removed from store catalog', 'success');
+      return true;
+    } catch (err) {
+      showToast(`Error deleting product: ${err.message}`, 'danger');
+      return false;
+    }
+  };
+
+  const adminUpdateStock = async (id, newStock) => {
+    try {
+      const stockVal = Math.max(0, Number(newStock));
+      if (isBackendConnected) {
+        await apiClient.updateProductStock(id, stockVal);
+      }
+      setProductsList(prev => prev.map(p => p.id === id ? { ...p, stock: stockVal } : p));
+      showToast(`📦 Stock adjusted to ${stockVal} units`, 'success');
+    } catch (err) {
+      showToast(`Error updating stock: ${err.message}`, 'danger');
+    }
+  };
+
+  // Admin Order Actions
+  const adminUpdateOrderStatus = async (orderId, newStatus, newStep = null, trackingNumber = null) => {
+    try {
+      let step = newStep;
+      if (step === null) {
+        if (newStatus === 'Processing') step = 1;
+        else if (newStatus === 'Confirmed') step = 2;
+        else if (newStatus === 'In Transit' || newStatus === 'Shipped') step = 3;
+        else if (newStatus === 'Delivered') step = 4;
+        else step = 1;
+      }
+
+      if (isBackendConnected) {
+        await apiClient.updateOrderStatus(orderId, {
+          status: newStatus,
+          statusStep: step,
+          trackingNumber: trackingNumber || undefined
+        });
+      }
+
+      setOrders(prev => prev.map(o => {
+        if (o.id === orderId) {
+          return {
+            ...o,
+            status: newStatus,
+            statusStep: step,
+            ...(trackingNumber ? { trackingNumber } : {})
+          };
+        }
+        return o;
+      }));
+
+      showToast(`🚚 Order ${orderId} marked as ${newStatus}!`, 'success');
+      return true;
+    } catch (err) {
+      showToast(`Error updating order: ${err.message}`, 'danger');
+      return false;
+    }
+  };
+
+  // Admin Category Actions
+  const adminAddCategory = async (categoryData) => {
+    try {
+      if (isBackendConnected) {
+        await apiClient.createCategory(categoryData);
+      }
+      setCategoriesList(prev => [...prev, categoryData]);
+      showToast(`🏷️ Category "${categoryData.name}" created!`, 'success');
+      return true;
+    } catch (err) {
+      showToast(`Error creating category: ${err.message}`, 'danger');
+      return false;
+    }
+  };
+
+  const adminDeleteCategory = async (id) => {
+    try {
+      if (isBackendConnected) {
+        await apiClient.deleteCategory(id);
+      }
+      setCategoriesList(prev => prev.filter(c => c.id !== id));
+      showToast('Category deleted', 'success');
+      return true;
+    } catch (err) {
+      showToast(`Error deleting category: ${err.message}`, 'danger');
+      return false;
+    }
+  };
+
+  // Admin Coupon Actions
+  const adminAddCoupon = async (couponData) => {
+    try {
+      if (isBackendConnected) {
+        await apiClient.createCoupon(couponData);
+      }
+      setCouponsList(prev => [couponData, ...prev]);
+      showToast(`🎟️ Coupon ${couponData.code} active!`, 'success');
+      return true;
+    } catch (err) {
+      showToast(`Error creating coupon: ${err.message}`, 'danger');
+      return false;
+    }
+  };
+
+  const adminDeleteCoupon = async (code) => {
+    try {
+      if (isBackendConnected) {
+        await apiClient.deleteCoupon(code);
+      }
+      setCouponsList(prev => prev.filter(c => c.code.toUpperCase() !== code.toUpperCase()));
+      showToast(`Coupon ${code} removed`, 'success');
+      return true;
+    } catch (err) {
+      showToast(`Error deleting coupon: ${err.message}`, 'danger');
+      return false;
+    }
+  };
+
+  // Admin Ticket Actions
+  const adminUpdateTicketStatus = async (id, status) => {
+    try {
+      if (isBackendConnected) {
+        await apiClient.updateTicketStatus(id, status);
+      }
+      setTicketsList(prev => prev.map(t => t.id === id ? { ...t, status } : t));
+      showToast(`Ticket ${id} marked as ${status}`, 'success');
+    } catch (err) {
+      showToast(`Error updating ticket: ${err.message}`, 'danger');
+    }
+  };
+
+  // Admin Review Actions
+  const adminDeleteReview = async (id) => {
+    try {
+      if (isBackendConnected) {
+        await apiClient.deleteReview(id);
+      }
+      setReviewsList(prev => prev.filter(r => r.id !== id));
+      showToast('Review removed by administrator', 'success');
+    } catch (err) {
+      showToast(`Error deleting review: ${err.message}`, 'danger');
+    }
+  };
+
+  // Admin Customer Reward Actions
+  const adminUpdateUserPoints = async (userId, newPoints) => {
+    try {
+      if (isBackendConnected) {
+        await apiClient.updateUserPoints(userId, newPoints);
+      }
+      if (user && user.id === userId) {
+        setUser(prev => ({ ...prev, rewardPoints: newPoints }));
+      }
+      showToast(`🪙 Reward points updated to ${newPoints} pts`, 'success');
+    } catch (err) {
+      showToast(`Error updating reward points: ${err.message}`, 'danger');
+    }
+  };
+
   return (
     <ShopContext.Provider
       value={{
@@ -205,6 +443,10 @@ export const ShopProvider = ({ children }) => {
         setSelectedCategory,
         productsList,
         setProductsList,
+        categoriesList,
+        couponsList,
+        ticketsList,
+        reviewsList,
         cart,
         cartCount,
         cartSubtotal,
@@ -222,6 +464,7 @@ export const ShopProvider = ({ children }) => {
         user,
         setUser,
         orders,
+        setOrders,
         placeOrder,
         quickViewProduct,
         setQuickViewProduct,
@@ -229,7 +472,20 @@ export const ShopProvider = ({ children }) => {
         setActiveOrderSuccess,
         isBackendConnected,
         toast,
-        showToast
+        showToast,
+        // Admin Exports
+        adminAddProduct,
+        adminUpdateProduct,
+        adminDeleteProduct,
+        adminUpdateStock,
+        adminUpdateOrderStatus,
+        adminAddCategory,
+        adminDeleteCategory,
+        adminAddCoupon,
+        adminDeleteCoupon,
+        adminUpdateTicketStatus,
+        adminDeleteReview,
+        adminUpdateUserPoints
       }}
     >
       {children}

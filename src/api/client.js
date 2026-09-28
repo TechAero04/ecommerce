@@ -119,5 +119,168 @@ export const apiClient = {
     const data = await res.json();
     if (!res.ok) throw new Error('Failed to save address');
     return data;
+  },
+
+  // ==================================================================
+  // Admin Dashboard API Client Methods (Milestone 3 Deliverables)
+  // ==================================================================
+  async getAdminStats() {
+    const res = await fetch(`${API_BASE_URL}/admin/stats`);
+    if (!res.ok) throw new Error('Failed to fetch admin statistics');
+    return res.json();
+  },
+
+  async createProduct(productData) {
+    const res = await fetch(`${API_BASE_URL}/admin/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to create product');
+    return data;
+  },
+
+  async updateProduct(id, productData) {
+    const res = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update product');
+    return data;
+  },
+
+  async deleteProduct(id) {
+    const res = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
+      method: 'DELETE'
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to delete product');
+    return data;
+  },
+
+  async updateProductStock(id, stock) {
+    const res = await fetch(`${API_BASE_URL}/admin/products/${id}/stock`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ stock })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update stock');
+    return data;
+  },
+
+  async getAdminOrders() {
+    const res = await fetch(`${API_BASE_URL}/admin/orders`);
+    if (!res.ok) throw new Error('Failed to fetch admin orders');
+    return res.json();
+  },
+
+  async updateOrderStatus(id, statusData) {
+    const res = await fetch(`${API_BASE_URL}/admin/orders/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(statusData)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update order status');
+    return data;
+  },
+
+  async getAdminUsers() {
+    const res = await fetch(`${API_BASE_URL}/admin/users`);
+    if (!res.ok) throw new Error('Failed to fetch admin users');
+    return res.json();
+  },
+
+  async updateUserPoints(id, points) {
+    const res = await fetch(`${API_BASE_URL}/admin/users/${id}/points`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ points })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update user reward points');
+    return data;
+  },
+
+  async createCategory(categoryData) {
+    const res = await fetch(`${API_BASE_URL}/admin/categories`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(categoryData)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to create category');
+    return data;
+  },
+
+  async deleteCategory(id) {
+    const res = await fetch(`${API_BASE_URL}/admin/categories/${id}`, {
+      method: 'DELETE'
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to delete category');
+    return data;
+  },
+
+  async getAdminCoupons() {
+    const res = await fetch(`${API_BASE_URL}/admin/coupons`);
+    if (!res.ok) throw new Error('Failed to fetch coupons');
+    return res.json();
+  },
+
+  async createCoupon(couponData) {
+    const res = await fetch(`${API_BASE_URL}/admin/coupons`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(couponData)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to create coupon');
+    return data;
+  },
+
+  async deleteCoupon(code) {
+    const res = await fetch(`${API_BASE_URL}/admin/coupons/${code}`, {
+      method: 'DELETE'
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to delete coupon');
+    return data;
+  },
+
+  async getAdminTickets() {
+    const res = await fetch(`${API_BASE_URL}/admin/tickets`);
+    if (!res.ok) throw new Error('Failed to fetch support tickets');
+    return res.json();
+  },
+
+  async updateTicketStatus(id, status) {
+    const res = await fetch(`${API_BASE_URL}/admin/tickets/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update ticket status');
+    return data;
+  },
+
+  async getAdminReviews() {
+    const res = await fetch(`${API_BASE_URL}/admin/reviews`);
+    if (!res.ok) throw new Error('Failed to fetch reviews');
+    return res.json();
+  },
+
+  async deleteReview(id) {
+    const res = await fetch(`${API_BASE_URL}/admin/reviews/${id}`, {
+      method: 'DELETE'
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to delete review');
+    return data;
   }
 };

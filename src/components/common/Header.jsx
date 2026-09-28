@@ -11,7 +11,8 @@ import {
   PhoneCall, 
   HelpCircle, 
   ChevronDown,
-  Package
+  Package,
+  ShieldCheck
 } from 'lucide-react';
 import { CATEGORIES } from '../../data/mockData';
 
@@ -62,6 +63,22 @@ export const Header = () => {
             <span>Festive Offer: Extra 10% OFF with code <strong>VELMORA10</strong> | Free Shipping over ₹1,999</span>
           </div>
           <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }} className="mobile-hide">
+            <span 
+              style={{ 
+                cursor: 'pointer', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.25rem',
+                background: 'rgba(245, 158, 11, 0.25)',
+                padding: '0.15rem 0.6rem',
+                borderRadius: '12px',
+                color: '#FDE68A',
+                fontWeight: 700
+              }} 
+              onClick={() => navigateTo('admin')}
+            >
+              <ShieldCheck size={13} /> Admin Portal
+            </span>
             <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }} onClick={() => navigateTo('support')}>
               <PhoneCall size={13} /> 24/7 Helpline: 1800-VELMORA
             </span>
@@ -173,6 +190,20 @@ export const Header = () => {
                 }}
               >
                 Shop All
+              </span>
+              <span 
+                onClick={() => navigateTo('admin')} 
+                style={{ 
+                  fontWeight: currentPage === 'admin' ? 700 : 600, 
+                  color: currentPage === 'admin' ? '#4F46E5' : '#D97706', 
+                  cursor: 'pointer',
+                  fontSize: '0.925rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem'
+                }}
+              >
+                <ShieldCheck size={16} /> Admin
               </span>
             </nav>
 

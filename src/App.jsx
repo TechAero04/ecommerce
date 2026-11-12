@@ -18,6 +18,7 @@ import { OrdersPage } from './pages/OrdersPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SupportPage } from './pages/SupportPage';
 import { AdminPage } from './pages/AdminPage';
+import { ServerError500 } from './pages/ServerError500';
 
 const PageRenderer = () => {
   const { currentPage } = useShop();
@@ -51,7 +52,7 @@ const PageRenderer = () => {
 };
 
 const MainLayout = () => {
-  const { currentPage } = useShop();
+  const { currentPage, is500Active } = useShop();
 
   if (currentPage === 'admin') {
     return (
@@ -60,6 +61,11 @@ const MainLayout = () => {
         <Toast />
       </div>
     );
+  }
+
+  // Realistic 500 Internal Server Error Page for Home Page
+  if (currentPage === 'home' && is500Active) {
+    return <ServerError500 />;
   }
 
   return (

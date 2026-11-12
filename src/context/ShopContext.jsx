@@ -9,6 +9,49 @@ export const ShopProvider = ({ children }) => {
   const [currentPage, setCurrentPage] = useState('home');
   const [selectedProductId, setSelectedProductId] = useState('prod-1');
 
+  // 500 Internal Server Error Simulation State (Active on home page)
+  const [is500Active, setIs500Active] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.toLowerCase();
+      const params = new URLSearchParams(window.location.search);
+      if (hash === '#store' || hash === '#bypass' || params.get('bypass') === 'true' || params.get('mode') === 'live') {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  // URL Hash & Query Routing Listener (#admin, #shop, #store, #500)
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      const params = new URLSearchParams(window.location.search);
+      const pageParam = params.get('page');
+
+      if (hash === 'admin' || pageParam === 'admin') {
+        setCurrentPage('admin');
+      } else if (hash === 'shop' || pageParam === 'shop') {
+        setCurrentPage('shop');
+      } else if (hash === 'cart' || pageParam === 'cart') {
+        setCurrentPage('cart');
+      } else if (hash === 'store' || hash === 'bypass' || params.get('bypass') === 'true' || params.get('mode') === 'live') {
+        setIs500Active(false);
+        setCurrentPage('home');
+      } else if (hash === '500' || params.get('error') === '500') {
+        setIs500Active(true);
+        setCurrentPage('home');
+      }
+    };
+
+    handleUrlChange();
+    window.addEventListener('hashchange', handleUrlChange);
+    window.addEventListener('popstate', handleUrlChange);
+    return () => {
+      window.removeEventListener('hashchange', handleUrlChange);
+      window.removeEventListener('popstate', handleUrlChange);
+    };
+  }, []);
+
   // Search & Category Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -473,6 +516,9 @@ export const ShopProvider = ({ children }) => {
         isBackendConnected,
         toast,
         showToast,
+        // 500 Error State
+        is500Active,
+        setIs500Active,
         // Admin Exports
         adminAddProduct,
         adminUpdateProduct,
